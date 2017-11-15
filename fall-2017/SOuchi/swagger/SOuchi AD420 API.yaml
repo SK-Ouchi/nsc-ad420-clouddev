@@ -17,7 +17,7 @@ tags:
     externalDocs:
       description: Find out more
       url: 'http://swagger.io'
-  - name: store
+  - name: API AD420
     description: API Access AD420
   - name: user
     description: Operations about user
@@ -27,7 +27,7 @@ tags:
 schemes:
   - http
 paths:
-  /user:
+  /user/:
     post:
       tags:
         - user
@@ -50,32 +50,6 @@ paths:
       responses:
         '405':
           description: Invalid input
-    put:
-      tags:
-        - user
-      summary: Update an existing user
-      description: ''
-      operationId: updateUser
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: User object
-          required: true
-          schema:
-            $ref: '#/definitions/user'
-      responses:
-        '400':
-          description: Invalid user supplied
-        '404':
-          description: User not found
-        '405':
-          description: Validation exception
   '/user/{userId}':
     get:
       tags:
@@ -102,42 +76,31 @@ paths:
           description: Invalid ID supplied
         '404':
           description: user not found
-    post:
+    put:
       tags:
         - user
-      summary: Updates a user with form data
-      description: ''
-      operationId: updateUserWithForm
-      consumes:
-        - application/x-www-form-urlencoded
+      summary: Update an existing user
+      description: Update an existing user by ID
+      operationId: putuserById
       produces:
         - application/xml
         - application/json
       parameters:
         - name: userId
           in: path
-          description: ID of user that needs to be updated
+          description: ID of user to update
           required: true
           type: integer
           format: int64
-        - name: username
-          in: formData
-          description: Updated username of the user
-          required: false
-          type: string
-        - name: firstname
-          in: formData
-          description: Updated firstname of the user
-          required: false
-          type: string
-        - name: lastname
-          in: formData
-          description: Updated lastname of the user
-          required: false
-          type: string
       responses:
-        '405':
-          description: Invalid input
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/user'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: user not found
     delete:
       tags:
         - user
@@ -163,72 +126,31 @@ paths:
           description: Invalid ID supplied
         '404':
           description: User not found
-  /task:
-    post:
-      tags:
-        - task
-      summary: Create a new task
-      description: Add a task
-      operationId: addTask
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: Task needs to be added
-          required: true
-          schema:
-            $ref: '#/definitions/task'
-      responses:
-        '405':
-          description: Invalid input
-    put:
-      tags:
-        - task
-      summary: Update an existing task
-      description: ''
-      operationId: updateTask
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: Task object
-          required: true
-          schema:
-            $ref: '#/definitions/task'
-      responses:
-        '400':
-          description: Invalid task
-        '404':
-          description: Task not found
-        '405':
-          description: Validation exception
-  '/task/{taskId}':
+  '/user/{userId}/task':
     get:
       tags:
         - task
-      summary: Find task by ID
-      description: Returns a single task
-      operationId: gettaskById
+      summary: Get user by task
+      description: Get user by task
+      operationId: getTask
       produces:
         - application/xml
         - application/json
+      consumes:
+        - application/xml
+        - application/json
       parameters:
-        - name: taskId
+        - name: userId
           in: path
-          description: ID of task to return
+          description: ID of user to return
           required: true
           type: integer
           format: int64
+        - name: task
+          in: query
+          description: Find task
+          required: false
+          type: string
       responses:
         '200':
           description: successful operation
@@ -237,30 +159,82 @@ paths:
         '400':
           description: Invalid ID supplied
         '404':
-          description: task not found
+          description: user not found
     post:
       tags:
         - task
-      summary: Updates a task with form data
-      description: ''
-      operationId: updateTaskWithForm
+      summary: Create a new task for user
+      description: Create a new task for user
+      operationId: addTask
       consumes:
-        - application/x-www-form-urlencoded
+        - application/xml
+        - application/json
       produces:
         - application/xml
         - application/json
       parameters:
-        - name: taskId
+        - name: task
+          in: body
+          description: Id of user with task
+          required: true
+          schema:
+            $ref: '#/definitions/task'
+      responses:
+        '405':
+          description: Invalid input
+  '/user/{userId}/task/{taskId}':
+    get:
+      tags:
+        - task
+      summary: Get user by task
+      description: Get user by task
+      operationId: getTaskById
+      produces:
+        - application/xml
+        - application/json
+      consumes:
+        - application/xml
+        - application/json
+      parameters:
+        - name: userId
           in: path
-          description: ID of task that needs to be updated
+          description: User Id
           required: true
           type: integer
           format: int64
-        - name: discription
-          in: formData
-          description: Updated discription of the user
+        - name: taskName
+          in: query
+          description: Find task
           required: false
           type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/task'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: user not found
+    put:
+      tags:
+        - task
+      summary: Update user task
+      description: ''
+      operationId: updateTask
+      consumes:
+        - application/xml
+        - application/json
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - in: body
+          name: updateTask
+          description: Update user by task
+          required: true
+          schema:
+            $ref: '#/definitions/task'
       responses:
         '405':
           description: Invalid input
@@ -269,7 +243,7 @@ paths:
         - task
       summary: Deletes a task
       description: ''
-      operationId: deletetask
+      operationId: deleteTask
       produces:
         - application/xml
         - application/json
@@ -280,7 +254,7 @@ paths:
           type: string
         - name: taskId
           in: path
-          description: Task id to delete
+          description: task id to delete
           required: true
           type: integer
           format: int64
@@ -288,57 +262,7 @@ paths:
         '400':
           description: Invalid ID supplied
         '404':
-          description: Task not found
-  /user/task:
-    post:
-      tags:
-        - user
-      summary: Place a task for a user
-      description: ''
-      operationId: placeTask
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: task placed for user
-          required: true
-          schema:
-            $ref: '#/definitions/task'
-      responses:
-        '200':
-          description: successful operation
-          schema:
-            $ref: '#/definitions/task'
-        '400':
-          description: Invalid task
-  '/user/task/{taskId}':
-    get:
-      tags:
-        - user
-      summary: Find user user by taskID
-      description: ''
-      operationId: getUserByTaskId
-      produces:
-        - application/xml
-        - application/json
-      parameters:
-        - name: taskId
-          in: path
-          description: ID of task that needs to be fetched
-          required: true
-          type: integer
-          format: int64
-      responses:
-        '200':
-          description: successful operation
-          schema:
-            $ref: '#/definitions/task'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: task not found
+          description: User not found
 definitions:
   task:
     type: object
@@ -346,8 +270,11 @@ definitions:
       id:
         type: integer
         format: int64
-      description:
+      name:
         type: string
+      complete:
+        type: boolean
+        default: false
     xml:
       name: Task
   user:
