@@ -50,6 +50,32 @@ paths:
       responses:
         '405':
           description: Invalid input
+    get:
+      tags:
+        - user
+      summary: Find user by name
+      description: Returns a user name
+      operationId: getUsername
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: user
+          in: query
+          description: Name of user to return
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/user'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: user not found
   '/user/{userId}':
     get:
       tags:
